@@ -44,11 +44,7 @@ Resources:
       - IpProtocol: tcp
         FromPort: 80
         ToPort: 80
-        CidrIp: 10.0.2.0/24
-      - IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80
-        CidrIp: 10.0.3.0/24
+        CidrIp: 0.0.0.0/0
   WebServerAutoScalingGroup:
     Type: AWS::AutoScaling::AutoScalingGroup
     Properties:
@@ -91,7 +87,7 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 8
       HealthyThresholdCount: 2
-      Port: 8080
+      Port: 80
       Protocol: HTTP
       UnhealthyThresholdCount: 5
       VpcId: 
