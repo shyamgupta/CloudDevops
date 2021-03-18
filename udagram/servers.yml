@@ -69,9 +69,11 @@ Resources:
           apt-get install apache2 -y
           systemctl start apache2.service
           cd /var/www/html
-          echo "Udacity Demo Web Server Up and Running!" > index.html
+          aws s3 cp s3://udacity-udagram-project/udagram.html.zip .
+          unzip -o udagram.html.zip
       ImageId: ami-02701bcdc5509e57b
       KeyName: UdagramEC2Key
+      IamInstanceProfile: arn:aws:s3:::udacity-udagram-project
       SecurityGroups:
       - Ref: WebserverSecGroup 
       InstanceType: t3.micro
@@ -112,4 +114,7 @@ Resources:
         Ref: WebAppLB
       Port: '80'
       Protocol: HTTP
-
+Outputs:
+  LoadBalancerDNSName:
+    Description: The DNSName of the backup load balancer
+    Value: !GetAtt WebAppLB.DNSName
