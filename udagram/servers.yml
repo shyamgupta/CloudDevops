@@ -7,6 +7,33 @@ Parameters:
     Description: Environment Name will be prefixed to resource names
     Type: String
 Resources:
+  S3AccessIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: S3AccessPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: 's3:*'
+                Resource: '*'
+  UdagramS3AccessInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+      - !Ref S3AccessIAMRole
   WebserverSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -62,6 +89,7 @@ Resources:
   WebServerLaunchConfig:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
+      IamInstanceProfile: !Ref UdagramS3AccessInstanceProfile
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
@@ -73,7 +101,6 @@ Resources:
           unzip -o udagram.html.zip
       ImageId: ami-02701bcdc5509e57b
       KeyName: UdagramEC2Key
-      IamInstanceProfile: arn:aws:s3:::udacity-udagram-project
       SecurityGroups:
       - Ref: WebserverSecGroup 
       InstanceType: t3.micro
